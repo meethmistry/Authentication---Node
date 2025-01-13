@@ -14,6 +14,9 @@ router.post("/signup", userController.createUser);
 // Route to log in the user
 router.post("/login", userController.loginUser);
 
+// Route to log out the user
+router.post("/logout", userController.logoutUser);
+
 // Route to change password
 router.post("/change-password", userController.changePassword);
 

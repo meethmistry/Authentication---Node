@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const SendEmail = require("../services/emailService");
 const otpStore = new Map();
+let blacklistedTokens = [];
 
 // First Time OTP
 const sendOtp = async (req, res) => {
@@ -158,6 +159,25 @@ const loginUser = async (req, res) => {
   }
 };
 
+// Logout User
+const logoutUser = (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  if (!token) {
+    return res.status(400).json({
+      success: false,
+      message: "Token is required for logout.",
+    });
+  }
+
+  blacklistedTokens.push(token);
+
+  return res.status(200).json({
+    success: true,
+    message: "Logged out successfully.",
+  });
+};
+
 // Change Password After Login
 const changePassword = async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
@@ -287,7 +307,6 @@ const deleteUserByEmail = async (req, res) => {
   }
 };
 
-
 module.exports = {
   sendOtp,
   verifyOtp,
@@ -297,4 +316,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   deleteUserByEmail,
+  logoutUser,
 };
