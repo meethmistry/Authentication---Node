@@ -5,6 +5,7 @@ const SendEmail = require("../services/emailService");
 const otpStore = new Map();
 let blacklistedTokens = [];
 
+
 // First Time OTP
 const sendOtp = async (req, res) => {
   const { email } = req.body;
@@ -159,6 +160,7 @@ const loginUser = async (req, res) => {
   }
 };
 
+
 // Logout User
 const logoutUser = (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -170,6 +172,7 @@ const logoutUser = (req, res) => {
     });
   }
 
+  // Add the token to the blacklist
   blacklistedTokens.push(token);
 
   return res.status(200).json({
@@ -307,6 +310,7 @@ const deleteUserByEmail = async (req, res) => {
   }
 };
 
+
 module.exports = {
   sendOtp,
   verifyOtp,
@@ -316,5 +320,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   deleteUserByEmail,
-  logoutUser,
+  logoutUser, 
 };
