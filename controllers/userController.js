@@ -105,11 +105,16 @@ const createUser = async (req, res) => {
     });
 
     await user.save();
-
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET || "GeminiPlus3",
+      { expiresIn: "1h" }
+    );
     return res.status(201).json({
       success: true,
       message: "User created successfully.",
       data: user,
+      token,
     });
   } catch (error) {
     return res.status(500).json({
