@@ -5,7 +5,6 @@ const SendEmail = require("../services/emailService");
 const otpStore = new Map();
 let blacklistedTokens = [];
 
-
 // First Time OTP
 const sendOtp = async (req, res) => {
   const { email } = req.body;
@@ -165,7 +164,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // Logout User
 const logoutUser = (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -262,10 +260,18 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// Reset Password After Forgot Password
 const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
   try {
+    const user = await UserModel.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     await UserModel.updateOne(
@@ -284,7 +290,7 @@ const resetPassword = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Password has been updated successfully.",
-      token
+      token,
     });
   } catch (error) {
     return res.status(500).json({
@@ -322,7 +328,6 @@ const deleteUserByEmail = async (req, res) => {
   }
 };
 
-
 module.exports = {
   sendOtp,
   verifyOtp,
@@ -332,5 +337,5 @@ module.exports = {
   forgotPassword,
   resetPassword,
   deleteUserByEmail,
-  logoutUser, 
+  logoutUser,
 };
