@@ -270,9 +270,16 @@ const resetPassword = async (req, res) => {
 
     otpStore.delete(email);
 
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET || "GeminiPlus3",
+      { expiresIn: "1h" }
+    );
+
     return res.status(200).json({
       success: true,
       message: "Password has been updated successfully.",
+      token
     });
   } catch (error) {
     return res.status(500).json({
