@@ -83,11 +83,12 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-// Create User
 const createUser = async (req, res) => {
   const { email, password } = req.body;
+  
   try {
-    const existingUser = await UserModel.findOne({ email });
+    // Check if email is already registered (case-insensitive)
+    const existingUser = await UserModel.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -95,24 +96,30 @@ const createUser = async (req, res) => {
       });
     }
 
+    // Hash the password securely
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create new user instance
     const user = new UserModel({
-      email,
+      email: email.toLowerCase(),
       password: hashedPassword,
       dateTime: new Date(),
     });
 
+    // Save the user to the database
     await user.save();
+
+    // Generate JWT token after successful save
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id.toString(), email: user.email },
       process.env.JWT_SECRET || "GeminiPlus3",
       { expiresIn: "1h" }
     );
+
     return res.status(201).json({
       success: true,
       message: "User created successfully.",
-      data: user,
+      data: { id: user._id, email: user.email, dateTime: user.dateTime },
       token,
     });
   } catch (error) {
@@ -123,6 +130,7 @@ const createUser = async (req, res) => {
     });
   }
 };
+
 
 // Login User
 const loginUser = async (req, res) => {
