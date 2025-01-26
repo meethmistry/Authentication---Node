@@ -1,6 +1,6 @@
 const express = require("express");
 const userController = require("../controllers/userController");
-const authMiddleware = require("../middlewares/authMiddleware"); // Middleware for token validation
+const authMiddleware = require("../middlewares/authMiddleware");
 const router = express.Router();
 
 // Public Routes
@@ -15,5 +15,9 @@ router.post("/reset-password", userController.resetPassword);
 router.post("/logout", authMiddleware, userController.logoutUser); 
 router.post("/change-password", authMiddleware, userController.changePassword);
 router.delete("/delete-account", authMiddleware, userController.deleteUserByEmail); 
+
+
+
+
 
 module.exports = router;
